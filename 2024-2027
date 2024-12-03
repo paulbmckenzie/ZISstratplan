@@ -1,0 +1,223 @@
+import React, { useState } from 'react';
+import { Clock, CheckCircle, Circle, PauseCircle, RotateCcw, XCircle, AlertCircle } from 'lucide-react';
+
+const StatusMenu = ({ status, onStatusChange }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const statuses = [
+    { icon: <AlertCircle className="w-4 h-4" />, label: "Not Started", color: "text-red-500", value: "🔴" },
+    { icon: <Clock className="w-4 h-4" />, label: "Planning", color: "text-yellow-500", value: "🟡" },
+    { icon: <Clock className="w-4 h-4" />, label: "In Progress - Early", color: "text-orange-500", value: "🟠" },
+    { icon: <Clock className="w-4 h-4" />, label: "In Progress - Advanced", color: "text-blue-500", value: "🔵" },
+    { icon: <CheckCircle className="w-4 h-4" />, label: "Near Completion", color: "text-green-500", value: "🟢" },
+    { icon: <CheckCircle className="w-4 h-4" />, label: "Completed", color: "text-green-700", value: "✅" },
+    { icon: <PauseCircle className="w-4 h-4" />, label: "On Hold", color: "text-gray-500", value: "⚪" },
+    { icon: <RotateCcw className="w-4 h-4" />, label: "Ongoing", color: "text-purple-500", value: "🔄" },
+    { icon: <XCircle className="w-4 h-4" />, label: "Discontinued", color: "text-gray-900", value: "⚫" }
+  ];
+
+  const currentStatus = statuses.find(s => s.value === status) || statuses[0];
+
+  return (
+    <div className="relative inline-block text-left">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="inline-flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none"
+      >
+        <span className={`mr-2 ${currentStatus.color}`}>{currentStatus.icon}</span>
+        {currentStatus.label}
+        <Circle className="w-4 h-4 ml-2" />
+      </button>
+
+      {isOpen && (
+        <div className="absolute right-0 z-10 w-56 mt-2 origin-top-right bg-white border border-gray-200 rounded-md shadow-lg">
+          <div className="py-1">
+            {statuses.map((s) => (
+              <button
+                key={s.value}
+                onClick={() => {
+                  onStatusChange(s.value);
+                  setIsOpen(false);
+                }}
+                className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              >
+                <span className={`mr-2 ${s.color}`}>{s.icon}</span>
+                {s.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const PhaseSection = ({ title, phase, goals, onStatusChange }) => {
+  return (
+    <section className="mb-8">
+      <h2 className="text-xl font-semibold mb-4">{title}</h2>
+      {Object.entries(phase).map(([categoryKey, category]) => (
+        <div key={categoryKey} className="mb-6">
+          <h3 className="text-lg font-medium mb-3">{category.name}</h3>
+          <div className="space-y-3">
+            {Object.entries(category.goals).map(([goalKey, goal]) => (
+              <div key={goalKey} className="flex items-center justify-between p-3 bg-gray-50 rounded">
+                <span className="flex-1 mr-4">{goal.name}</span>
+                <StatusMenu 
+                  status={goals[`${categoryKey}-${goalKey}`]}
+                  onStatusChange={(newStatus) => onStatusChange(`${categoryKey}-${goalKey}`, newStatus)}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </section>
+  );
+};
+
+const StrategicPlanTracker = () => {
+  const phase1 = {
+    teaching: {
+      name: "Excellence in Teaching, Learning & AI Integration",
+      goals: {
+        toddle: { name: "Implement Toddle LMS system-wide" },
+        aiLiteracy: { name: "Establish AI literacy program for staff and students" },
+        aiPilot: { name: "Launch pilot programs for AI-enhanced teaching" },
+        aiEthics: { name: "Create AI ethics guidelines and responsible use policies" },
+        ibImplementation: { name: "Strengthen IB programme implementation" },
+        learningStandards: { name: "Define high-quality learning standards with AI tools" }
+      }
+    },
+    leadership: {
+      name: "Leadership & Staffing",
+      goals: {
+        ibCoordinators: { name: "Assign and empower IB Programme Coordinators" },
+        dpCoordinator: { name: "Recruit experienced DP Coordinator" },
+        recruitment: { name: "Implement comprehensive safe recruitment practices" },
+        aiCompetency: { name: "Develop AI competency framework for staff" },
+        profDev: { name: "Launch ACAMIS PeerSphere professional development" }
+      }
+    },
+    wellbeing: {
+      name: "Student Well-being & Safety",
+      goals: {
+        safeguarding: { name: "Review and update safeguarding policies" },
+        counseling: { name: "Expand counseling services" },
+        digitalCitizenship: { name: "Implement digital citizenship curriculum" },
+        aiSafety: { name: "Create AI-aware student safety protocols" }
+      }
+    }
+  };
+
+  const phase2 = {
+    programme: {
+      name: "Programme Enhancement",
+      goals: {
+        toddleImpl: { name: "Full implementation of Toddle across all programmes" },
+        aiIntegration: { name: "Expand AI integration across curriculum" },
+        weekWithoutWalls: { name: "Launch Week Without Walls programme" },
+        languageSupport: { name: "Develop comprehensive language support services" },
+        personalizedLearning: { name: "Implement AI-enhanced personalized learning paths" }
+      }
+    },
+    community: {
+      name: "Community & Communication",
+      goals: {
+        website: { name: "Launch new school website with AI features" },
+        parentEd: { name: "Establish regular parent education workshops on AI" },
+        portfolios: { name: "Create digital portfolios for students" },
+        aiComms: { name: "Implement AI-enhanced communication systems" }
+      }
+    },
+    campus: {
+      name: "Campus & Technology",
+      goals: {
+        techInfra: { name: "Upgrade technology infrastructure" },
+        aiSpaces: { name: "Create AI/technology innovation spaces" },
+        sustainability: { name: "Implement environmental sustainability initiatives" },
+        security: { name: "Enhance digital security measures" }
+      }
+    }
+  };
+
+  const phase3 = {
+    advanced: {
+      name: "Advanced Implementation",
+      goals: {
+        aiCenter: { name: "Establish AI Center of Excellence" },
+        studentProjects: { name: "Launch student AI innovation projects" },
+        adminSystems: { name: "Develop AI-enhanced administrative systems" },
+        sustainabilityAI: { name: "Create sustainability initiatives using AI" },
+        analytics: { name: "Implement predictive analytics for student success" }
+      }
+    },
+    quality: {
+      name: "Quality Assurance",
+      goals: {
+        impact: { name: "Conduct comprehensive impact assessment" },
+        aiRefine: { name: "Review and refine AI integration" },
+        policies: { name: "Update policies and procedures" },
+        accreditation: { name: "Prepare for next accreditation cycle" }
+      }
+    },
+    future: {
+      name: "Future Planning",
+      goals: {
+        nextPhase: { name: "Develop next phase strategic initiatives" },
+        succession: { name: "Create succession planning framework" },
+        innovation: { name: "Establish innovation fund" },
+        facilities: { name: "Plan facility expansions" }
+      }
+    }
+  };
+
+  // Initialize all goals with a status
+  const initializeGoals = () => {
+    const goals = {};
+    [phase1, phase2, phase3].forEach(phase => {
+      Object.entries(phase).forEach(([categoryKey, category]) => {
+        Object.keys(category.goals).forEach(goalKey => {
+          goals[`${categoryKey}-${goalKey}`] = "🔴";
+        });
+      });
+    });
+    return goals;
+  };
+
+  const [goals, setGoals] = useState(initializeGoals());
+
+  const handleStatusChange = (goalId, newStatus) => {
+    setGoals(prev => ({
+      ...prev,
+      [goalId]: newStatus
+    }));
+  };
+
+  return (
+    <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow">
+      <h1 className="text-2xl font-bold mb-6">ZIS Strategic Plan 2024-2027</h1>
+      
+      <PhaseSection 
+        title="Phase 1: Foundation Building (Feb 2024 - Jan 2025)" 
+        phase={phase1} 
+        goals={goals}
+        onStatusChange={handleStatusChange}
+      />
+      <PhaseSection 
+        title="Phase 2: Development & Integration (Feb 2025 - Jan 2026)" 
+        phase={phase2}
+        goals={goals}
+        onStatusChange={handleStatusChange}
+      />
+      <PhaseSection 
+        title="Phase 3: Innovation & Sustainability (Feb 2026 - Jan 2027)" 
+        phase={phase3}
+        goals={goals}
+        onStatusChange={handleStatusChange}
+      />
+    </div>
+  );
+};
+
+export default StrategicPlanTracker;
